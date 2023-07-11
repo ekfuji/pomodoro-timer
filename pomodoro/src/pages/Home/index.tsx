@@ -8,17 +8,45 @@ import {
   StartCountDownButton,
   TaskInput,
 } from './styles'
+import { useForm } from 'react-hook-form'
+
+// controlled components - Quando mantemos em tempo real, a informação que o usuário insere na aplicação
+// dentro do estado da nossa aplicação.
+// uncontrolled components - Busca a informação do valor do input, somente quando precisamos dela.
+// Utilizamos o uncontrolled components quando precisamos ganhar em performance, telas complexas com muitos campos.
+// Utilizamos o controlled components quando o formulário e interface são simples.
+
 export function Home() {
+  const { register, handleSubmit, watch } = useForm()
+  // A função register fala quais os campos que eu vou ter no meu formulário
+  /*
+   * function regoster(name: string){
+   *   return {
+   *    onChange: () => void,
+   *    onBlur: () => void,
+   *    onFocus:() => void
+   *   }
+   * }
+   */
+
+  function handleCreateNewCycle(data: any) {
+    console.log(data)
+  }
+
+  const task = watch('task')
+  const isSubmitDisabled = !task
+
   return (
     <HomeContainer>
-      <form action="">
+      <form onSubmit={handleSubmit(handleCreateNewCycle)}>
         <FormContainer>
           <label htmlFor="task">Vou trabalhar em</label>
           <TaskInput
             type="text"
             id="task"
             placeholder="Dê um nome para o seu projeto"
-            list="task-suggestions"
+            // list="task-suggestions"
+            {...register('task')}
           />
           <datalist id="task-suggestions">
             <option value="Projeto 1"></option>
@@ -34,6 +62,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            {...register('minutesAmount', { valueAsNumber: true })}
           />
           <span>minutos.</span>
         </FormContainer>
@@ -45,7 +74,7 @@ export function Home() {
           <span>0</span>
           <span>0</span>
         </CountdownContainer>
-        <StartCountDownButton disabled type="submit">
+        <StartCountDownButton disabled={isSubmitDisabled} type="submit">
           <Play size={24} />
           Começar
         </StartCountDownButton>
