@@ -1,4 +1,8 @@
 import { Play } from 'phosphor-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
+
 import {
   CountdownContainer,
   FormContainer,
@@ -8,7 +12,6 @@ import {
   StartCountDownButton,
   TaskInput,
 } from './styles'
-import { useForm } from 'react-hook-form'
 
 // controlled components - Quando mantemos em tempo real, a informação que o usuário insere na aplicação
 // dentro do estado da nossa aplicação.
@@ -16,8 +19,27 @@ import { useForm } from 'react-hook-form'
 // Utilizamos o uncontrolled components quando precisamos ganhar em performance, telas complexas com muitos campos.
 // Utilizamos o controlled components quando o formulário e interface são simples.
 
+const newCycleFormValidationSchema = zod.object({
+  task: zod.string().min(1, 'Informe a tarefa'),
+  minutesAmount: zod
+    .number()
+    .min(5, 'O ciclo precisa ser no mínimo de 5 minutos')
+    .max(60, 'O ciclo precisa ser no máximo de 60 minutos'),
+})
+
+interface NewCycleFormData {
+  task: string
+  minutesAmount: number
+}
+
 export function Home() {
-  const { register, handleSubmit, watch } = useForm()
+  const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
+    resolver: zodResolver(newCycleFormValidationSchema),
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
+  })
   // A função register fala quais os campos que eu vou ter no meu formulário
   /*
    * function regoster(name: string){
@@ -28,8 +50,7 @@ export function Home() {
    *   }
    * }
    */
-
-  function handleCreateNewCycle(data: any) {
+  function handleCreateNewCycle(data: NewCycleFormData) {
     console.log(data)
   }
 
