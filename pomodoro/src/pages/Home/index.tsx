@@ -37,7 +37,7 @@ type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
 // querendo referenciar uma variável javascript dentro do typescript precisamos utilizar o typeof.
 
 export function Home() {
-  const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
+  const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
       task: '',
@@ -56,6 +56,7 @@ export function Home() {
    */
   function handleCreateNewCycle(data: NewCycleFormData) {
     console.log(data)
+    reset()
   }
 
   const task = watch('task')
