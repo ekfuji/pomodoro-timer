@@ -27,10 +27,14 @@ const newCycleFormValidationSchema = zod.object({
     .max(60, 'O ciclo precisa ser no máximo de 60 minutos'),
 })
 
-interface NewCycleFormData {
-  task: string
-  minutesAmount: number
-}
+// interface NewCycleFormData {
+//   task: string
+//   minutesAmount: number
+// }
+
+type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
+// Não posso utilizar uma variável javascript dentro do typescript, então sempre que estamos
+// querendo referenciar uma variável javascript dentro do typescript precisamos utilizar o typeof.
 
 export function Home() {
   const { register, handleSubmit, watch } = useForm<NewCycleFormData>({
