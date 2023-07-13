@@ -2,6 +2,7 @@ import { Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
+import { differenceInSeconds } from 'date-fns'
 
 import {
   CountdownContainer,
@@ -12,7 +13,7 @@ import {
   StartCountDownButton,
   TaskInput,
 } from './styles'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // controlled components - Quando mantemos em tempo real, a informação que o usuário insere na aplicação
 // dentro do estado da nossa aplicação.
@@ -41,6 +42,7 @@ interface Cycle {
   id: string
   task: string
   minutesAmount: number
+  startDate: Date
 }
 
 export function Home() {
@@ -56,6 +58,17 @@ export function Home() {
     },
   })
 
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  useEffect(() => {
+    if (activeCycle) {
+      setInterval(() => {
+        setAmountSecondsPassed(
+          differenceInSeconds(new Date(), activeCycle.startDate)
+        )
+      }, 1000)
+    }
+  }, [activeCycle])
   // A função register fala quais os campos que eu vou ter no meu formulário
   /*
    * function regoster(name: string){
@@ -66,8 +79,6 @@ export function Home() {
    *   }
    * }
    */
-
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
@@ -85,9 +96,10 @@ export function Home() {
       id: idCycle,
       task: data.task,
       minutesAmount: data.minutesAmount,
+      startDate: new Date(),
     }
 
-    setCycles((state) => [...cycles, newCycle])
+    setCycles((state) => [...state, newCycle])
     setActiveCycleId(idCycle)
     reset()
   }
